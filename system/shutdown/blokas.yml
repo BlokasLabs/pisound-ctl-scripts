@@ -1,0 +1,6 @@
+name: Shutdown
+description: |
+    Running this script will shut down the system.
+author: Blokas Team
+entry: shutdown.sh
+requires_confirmation: yes

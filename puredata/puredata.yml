@@ -1,0 +1,6 @@
+name: Pure Data
+description: A visual programming language.
+listing_script: puredata_list.sh
+launcher_script: puredata_launch.sh
+stopper_script: puredata_stop.sh
+detail_script: puredata_detail.sh

@@ -1,0 +1,6 @@
+name: Restart
+description: |
+    Running this script will restart the system.
+author: Blokas Team
+entry: restart.sh
+requires_confirmation: yes

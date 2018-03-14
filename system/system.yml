@@ -1,0 +1,10 @@
+name: System
+description: A collection of useful system actions.
+listing_script: system_list.sh
+launcher_script: system_launch.sh
+stopper_script: system_stop.sh
+image: system.png
+strings:
+    singular_item: "1 script"
+    plural_items: "{#} scripts"
+    no_items: "No scripts..."
