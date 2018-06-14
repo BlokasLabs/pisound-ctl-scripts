@@ -15,4 +15,12 @@ echo
 echo "$PATCH"
 echo "$@"
 
+(
+	# Connect the osc2midi bridge to the MIDI Inputs and to Pure Data.
+	sleep 4
+	/usr/local/pisound-ctl/connect_osc2midi.sh "pisound-ctl"
+	aconnect "pisound-ctl" "Pure Data";
+	aconnect -d "Pure Data:1" "pisound-ctl"
+) &
+
 start_puredata "$PATCH" $@
