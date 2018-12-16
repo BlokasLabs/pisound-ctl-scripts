@@ -7,6 +7,11 @@
 # of the BSD license.  See the LICENSE file for details.
 #
 
+# Updated to include searching for and installing externals dependencies.
+# Externals should be placed in "pisound-patches/Externals" on USB drive.
+# t@creativecontrol.cc
+# 2018.12.15
+
 # Allow overriding environment variables.
 if [ -z "$EXTERNAL_MEDIA_DIR" ]; then
 	EXTERNAL_MEDIA_DIR=/media
@@ -15,8 +20,28 @@ if [ -z "$PUREDATA_DST_DIR" ]; then
 	PUREDATA_DST_DIR=/usr/local/puredata-patches
 fi
 
+EXTERNALS_DST_DIR=/usr/lib/pd/extra
+EXTERNAL_SRC_DIR="Externals"
+
+
 echo Starting USB import at "$EXTERNAL_MEDIA_DIR"...
 
+externals_import() {
+	if [ -e "$1" ]; then
+		ls "$1" | while read -r dir; do
+			echo Looking for "$EXTERNALS_DST_DIR/$dir"...
+			if [ -e "$EXTERNALS_DST_DIR/$dir" ]; then
+				echo External already installed
+			else
+				echo Importing "$dir" to "$EXTERNALS_DST_DIR/$dir"...
+				cp -r "$1/$dir" "$EXTERNALS_DST_DIR"
+			fi
+		done
+	else
+		echo No externals dependencies
+	fi
+	echo
+}
 
 puredata_import() {
 	PD_SRC_DIR=puredata-patches
@@ -25,13 +50,18 @@ puredata_import() {
 
 	if [ -e "$1/$PD_SRC_DIR" ]; then
 		ls "$1/$PD_SRC_DIR" | while read -r dir; do
-			if [ -e "$PUREDATA_DST_DIR/$dir" ]; then
-				echo Merging "$dir" to "$PUREDATA_DST_DIR/$dir"...
+			if [ "$dir" = "$EXTERNAL_SRC_DIR" ]; then
+				echo checking for externals dependencies "$1/$PD_SRC_DIR/$dir"...
+				externals_import "$1/$PD_SRC_DIR/$dir"
 			else
-				echo Importing "$dir" to "$PUREDATA_DST_DIR/$dir"...
+				if [ -e "$PUREDATA_DST_DIR/$dir" ]; then
+					echo Merging "$dir" to "$PUREDATA_DST_DIR/$dir"...
+				else
+					echo Importing "$dir" to "$PUREDATA_DST_DIR/$dir"...
+				fi
+				mkdir -p "$PUREDATA_DST_DIR/$dir"
+				cp -r "$1/$PD_SRC_DIR/$dir" "$PUREDATA_DST_DIR"
 			fi
-			mkdir -p "$PUREDATA_DST_DIR/$dir"
-			cp -r "$1/$PD_SRC_DIR/$dir" "$PUREDATA_DST_DIR"
 		done
 	else
 		>&2 echo "$1" does not contain "$PD_SRC_DIR"...
