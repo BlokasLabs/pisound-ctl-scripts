@@ -8,7 +8,7 @@
 #
 
 # Updated to include searching for and installing externals dependencies.
-# Externals should be placed in "pisound-patches/Externals" on USB drive.
+# Externals should be placed in "puredata-externals/" on USB drive.
 # t@creativecontrol.cc
 # 2018.12.15
 
@@ -19,26 +19,34 @@ fi
 if [ -z "$PUREDATA_DST_DIR" ]; then
 	PUREDATA_DST_DIR=/usr/local/puredata-patches
 fi
-
-EXTERNALS_DST_DIR=/usr/lib/pd/extra
-EXTERNAL_SRC_DIR="Externals"
-
+if [ -z "$PUREDATA_EXTERNALS_DST_DIR" ]; then
+	PUREDATA_EXTERNALS_DST_DIR=/usr/lib/pd/extra
+fi
 
 echo Starting USB import at "$EXTERNAL_MEDIA_DIR"...
 
-externals_import() {
-	if [ -e "$1" ]; then
-		ls "$1" | while read -r dir; do
-			echo Looking for "$EXTERNALS_DST_DIR/$dir"...
-			if [ -e "$EXTERNALS_DST_DIR/$dir" ]; then
-				echo External already installed
-			else
-				echo Importing "$dir" to "$EXTERNALS_DST_DIR/$dir"...
-				cp -r "$1/$dir" "$EXTERNALS_DST_DIR"
+puredata_externals_import() {
+	PD_EXT_SRC_DIR=puredata-externals
+
+	echo Looking for Pure Data externals in "$1/$PD_EXT_SRC_DIR"...
+
+	if [ -e "$1/$PD_EXT_SRC_DIR" ]; then
+		ls "$1/$PD_EXT_SRC_DIR" | while read -r dir; do
+			if [ ! -d "$1/$PD_EXT_SRC_DIR/$dir" ]; then
+				echo "$dir" is not a directory, skipping...
+				continue
 			fi
+
+			if [ -e "$PUREDATA_EXTERNALS_DST_DIR/$dir" ]; then
+				echo Merging "$dir" to "$PUREDATA_EXTERNALS_DST_DIR/$dir"...
+			else
+				echo Importing "$dir" to "$PUREDATA_EXTERNALS_DST_DIR/$dir"...
+			fi
+			mkdir -p "$PUREDATA_EXTERNALS_DST_DIR" # Make sure destination directory exists.
+			cp -r "$1/$PD_EXT_SRC_DIR/$dir" "$PUREDATA_EXTERNALS_DST_DIR"
 		done
 	else
-		echo No externals dependencies
+		>&2 echo "$1" does not contain "$PD_EXT_SRC_DIR"...
 	fi
 	echo
 }
@@ -50,18 +58,18 @@ puredata_import() {
 
 	if [ -e "$1/$PD_SRC_DIR" ]; then
 		ls "$1/$PD_SRC_DIR" | while read -r dir; do
-			if [ "$dir" = "$EXTERNAL_SRC_DIR" ]; then
-				echo checking for externals dependencies "$1/$PD_SRC_DIR/$dir"...
-				externals_import "$1/$PD_SRC_DIR/$dir"
-			else
-				if [ -e "$PUREDATA_DST_DIR/$dir" ]; then
-					echo Merging "$dir" to "$PUREDATA_DST_DIR/$dir"...
-				else
-					echo Importing "$dir" to "$PUREDATA_DST_DIR/$dir"...
-				fi
-				mkdir -p "$PUREDATA_DST_DIR/$dir"
-				cp -r "$1/$PD_SRC_DIR/$dir" "$PUREDATA_DST_DIR"
+			if [ ! -d "$1/$PD_SRC_DIR/$dir" ]; then
+				echo "$dir" is not a directory, skipping...
+				continue
 			fi
+
+			if [ -e "$PUREDATA_DST_DIR/$dir" ]; then
+				echo Merging "$dir" to "$PUREDATA_DST_DIR/$dir"...
+			else
+				echo Importing "$dir" to "$PUREDATA_DST_DIR/$dir"...
+			fi
+			mkdir -p "$PUREDATA_DST_DIR/$dir"
+			cp -r "$1/$PD_SRC_DIR/$dir" "$PUREDATA_DST_DIR"
 		done
 	else
 		>&2 echo "$1" does not contain "$PD_SRC_DIR"...
@@ -70,6 +78,7 @@ puredata_import() {
 }
 
 import_all() {
+	puredata_externals_import "$1"
 	puredata_import "$1"
 	# Add more importers here...
 }
@@ -97,6 +106,7 @@ mount_all_usb_drives
 
 ls "$EXTERNAL_MEDIA_DIR" | while read -r usb; do
 	echo Found '"'$usb'"'...
+	echo
 	import_all "$EXTERNAL_MEDIA_DIR/$usb"
 done
 
