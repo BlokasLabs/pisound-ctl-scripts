@@ -1,0 +1,15 @@
+Source: pisound-ctl-scripts-common
+Section: sound
+Priority: optional
+Maintainer: Blokas Labs <hello@blokas.io>
+Build-Depends: debhelper (>= 11), debhelper-compat(= 11)
+Standards-Version: 4.1.4
+Homepage: https://blokas.io
+
+Package: pisound-ctl-scripts-common
+Breaks: pisound-ctl (<< 1.03-6)
+Replaces: pisound-ctl (<< 1.03-6)
+Architecture: all
+Multi-Arch: foreign
+Depends: ${misc:Depends}, pisound-btn (>= 1.11-1)
+Description: Pisound CTL Common scripts

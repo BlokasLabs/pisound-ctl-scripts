@@ -1,0 +1,3 @@
+category_list.sh /usr/local/pisound-ctl
+connect_osc2midi.sh /usr/local/pisound-ctl
+usb_import.sh /usr/local/pisound-ctl
