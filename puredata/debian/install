@@ -1,0 +1,2 @@
+puredata_list.sh puredata_detail.sh puredata_launch.sh puredata_stop.sh puredata.yml /usr/local/pisound-ctl/puredata
+
