@@ -1,2 +1,2 @@
-fakeroot dpkg --build debian
-mv debian.deb pisound-ctl-scripts-system.deb
+#!/bin/sh
+exec dpkg-buildpackage -b
