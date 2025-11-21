@@ -1,3 +1,9 @@
+pisound-ctl-scripts-puredata (1.03-8) UNRELEASED; urgency=low
+
+  * Trixie edition rebuild.
+
+ -- Giedrius Trainavičius <giedrius@blokas.io>  Thu, 20 Nov 2025 23:18:19 +0200
+
 pisound-ctl-scripts-puredata (1.03-7) UNRELEASED; urgency=low
 
   * Rebuilt.
